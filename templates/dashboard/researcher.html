@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Researcher Dashboard | EcoSphere</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Reusing base structural styles from student, with researcher specifics -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/researcher.css') }}">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2" style="background: var(--clr-secondary-500);"></div>
+    </div>
+
+    <!-- Standalone Navbar -->
+    <nav class="navbar glass-effect">
+        <div class="nav-brand">
+            <i class="ph ph-planet"></i>
+            <span>EcoSphere <span class="role-badge"
+                    style="background: rgba(14, 165, 233, 0.2); color: var(--clr-secondary-400);">Researcher</span></span>
+        </div>
+        <div class="nav-controls">
+            <span class="welcome-text">Hi, {{ session.get('name', 'Dr. Guide') }}</span>
+            <button class="icon-button theme-toggle" id="themeToggle" title="Toggle Theme">
+                <i class="ph ph-sun" id="lightIcon" style="display:none;"></i>
+                <i class="ph ph-moon" id="darkIcon"></i>
+            </button>
+            <a href="{{ url_for('logout') }}" class="icon-button" title="Log Out"><i class="ph ph-sign-out"></i></a>
+        </div>
+    </nav>
+
+    <main class="dashboard-grid">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-effect">
+            <ul class="nav-links">
+                <li class="active" data-target="curiosity-section"><i class="ph ph-sparkle"></i> Curiosity Mode</li>
+                <li data-target="questions-section"><i class="ph ph-chats-circle"></i> Student Questions</li>
+                <li data-target="news-section"><i class="ph ph-globe"></i> Research News</li>
+                <li style="margin-top: 2rem;" data-target="network-section"><i class="ph ph-users"></i> Global Network
+                </li>
+                <li data-target="profile-section"><i class="ph ph-user-circle"></i> My Profile</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="content-area">
+
+            <!-- Student Questions (Response System) -->
+            <div id="questions-section" class="panel">
+                <div class="panel-header">
+                    <h2>Researcher Hub</h2>
+                    <p>Track your impact and respond to student inquiries.</p>
+                </div>
+
+                <!-- New Inspiration: Vibrant Gradient Priority/Overview Cards -->
+                <div class="promo-grid">
+                    <div class="promo-card gradient-blue">
+                        <h3>84</h3>
+                        <p>Questions Answered Impact</p>
+                        <i class="ph ph-chats-circle"></i>
+                    </div>
+                    <div class="promo-card gradient-green">
+                        <h3>Trending</h3>
+                        <p>High demand for CRISPR answers</p>
+                        <i class="ph ph-fire"></i>
+                    </div>
+                </div>
+
+                <div class="feed-container">
+                    {% if questions %}
+                    {% for q in questions %}
+                    <div class="feed-card glass-effect response-card">
+                        <div class="feed-meta">
+                            <span class="tag student-tag">From: {{ q.user_name }}</span>
+                            <span class="time">{{ q.timestamp.strftime('%H:%M') if q.timestamp else 'Just now' }}</span>
+                        </div>
+                        <h3>{{ q.category }}</h3>
+                        <p>{{ q.content }}</p>
+
+                        <div class="response-area mt-3">
+                            <textarea class="styled-input mb-2" rows="2"
+                                placeholder="Draft your structured research response..."></textarea>
+                            <button class="btn btn-secondary btn-sm"
+                                onclick="alert('Response validated and sent to student!')">Submit Response <i
+                                    class="ph ph-paper-plane-tilt"></i></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="glass-effect feed-card" style="text-align: center; color: var(--text-secondary);">
+                        No student questions currently in the network.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Curiosity Mode -->
+            <div id="curiosity-section" class="panel active">
+                <div class="panel-header">
+                    <h2>Curiosity Mode <i class="ph ph-sparkle text-accent"></i></h2>
+                    <p>Transform your curiosity into a structured research exploration using AI.</p>
+                </div>
+
+                <div class="ask-form glass-effect mb-4 ">
+                    <div class="form-group">
+                        <label>What are you curious about?</label>
+                        <textarea id="curiosityInput" class="styled-input" rows="3"
+                            placeholder="e.g. How do chameleons change their color?"></textarea>
+                    </div>
+                    <button id="submitCuriosityBtn" class="btn btn-primary">
+                        Explore <i class="ph ph-magnifying-glass"></i>
+                    </button>
+                </div>
+
+                <div id="curiosityResult" style="display: none;">
+                    <h3 class="mb-3">Exploration Results</h3>
+
+                    <div class="glass-effect mb-3 "
+                        style="border-left: 4px solid var(--clr-primary-400);">
+                        <h4 style="color: var(--clr-primary-400); margin-bottom: 0.5rem;"><i class="ph ph-info"></i>
+                            Biological Explanation</h4>
+                        <p id="curiosityExplanation" style="line-height: 1.6;"></p>
+                    </div>
+
+                    <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="glass-effect ">
+                            <h4 style="color: var(--clr-secondary-400); margin-bottom: 0.5rem;"><i
+                                    class="ph ph-tree-structure"></i> Related Topics</h4>
+                            <ul id="curiosityTopics" style="padding-left: 1.5rem; line-height: 1.6;"></ul>
+                        </div>
+                        <div class="glass-effect ">
+                            <h4 style="color: var(--clr-accent); margin-bottom: 0.5rem;"><i class="ph ph-question"></i>
+                                Research Questions</h4>
+                            <ul id="curiosityQuestions" style="padding-left: 1.5rem; line-height: 1.6;"></ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect mt-3 "
+                        style="border-left: 4px solid var(--clr-success, #10b981);">
+                        <h4 style="color: var(--clr-success, #10b981); margin-bottom: 0.5rem;"><i
+                                class="ph ph-flask"></i> Suggested Experiments</h4>
+                        <ul id="curiosityExperiments" style="padding-left: 1.5rem; line-height: 1.6;"></ul>
+                    </div>
+                </div>
+
+                <div id="curiosityLoader" style="display: none; text-align: center; padding: 2rem;">
+                    <i class="ph ph-spinner-gap ph-spin text-accent" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-secondary">Synthesizing research...</p>
+                </div>
+            </div>
+
+            <!-- Global Network Section -->
+            <div id="network-section" class="panel">
+                <div class="panel-header">
+                    <h2>Research Collaborators</h2>
+                    <p>Connect with peers, leading researchers, and industry professionals.</p>
+                </div>
+
+                <div class="network-grid">
+                    <!-- Network Card 1 -->
+                    <div class="network-card glass-effect ">
+                        <div class="network-avatar" style="background: rgba(14, 165, 233, 0.2);"><i
+                                class="ph ph-flask text-secondary" style="font-size: 2rem;"></i></div>
+                        <h3 style="margin-top: 1rem;">Dr. Alan Grant</h3>
+                        <p class="text-secondary" style="font-size: 0.85rem; margin-bottom: 0.5rem;">Paleobotanist •
+                            Researcher</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">Exploring
+                            prehistoric flora ecosystems and their modern descendants.</p>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="btn btn-outline btn-sm"
+                                onclick="alert('Viewing Dr. Grant\'s profile...')">View Profile</button>
+                            <button class="btn btn-primary btn-sm connect-trigger" data-target-name="Dr. Alan Grant"
+                                data-target-role="Researcher" data-target-id="123">Connect</button>
+                        </div>
+                    </div>
+
+                    <!-- Network Card 2 -->
+                    <div class="network-card glass-effect ">
+                        <div class="network-avatar" style="background: rgba(16, 185, 129, 0.2);"><i
+                                class="ph ph-graduation-cap"
+                                style="font-size: 2rem; color: var(--clr-primary-400);"></i></div>
+                        <h3 style="margin-top: 1rem;">Sarah Chen</h3>
+                        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--clr-primary-400);">
+                            Bioinformatics • Student</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">Mapping RNA
+                            sequences. Looking for study partners!</p>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="btn btn-outline btn-sm" onclick="alert('Viewing Sarah\'s profile...')">View
+                                Profile</button>
+                            <button class="btn btn-primary btn-sm connect-trigger" data-target-name="Sarah Chen"
+                                data-target-role="Student" data-target-id="124">Connect</button>
+                        </div>
+                    </div>
+
+                    <!-- Network Card 3 -->
+                    <div class="network-card glass-effect ">
+                        <div class="network-avatar" style="background: rgba(251, 191, 36, 0.2);"><i
+                                class="ph ph-stethoscope" style="font-size: 2rem; color: var(--clr-accent);"></i></div>
+                        <h3 style="margin-top: 1rem;">Marcus Vance, MD</h3>
+                        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--clr-accent);">Clinical
+                            Oncology • Professional</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">Connecting lab
+                            research with bedside treatment realities.</p>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="btn btn-outline btn-sm"
+                                onclick="alert('Viewing Dr. Vance\'s profile...')">View Profile</button>
+                            <button class="btn btn-primary btn-sm connect-trigger" data-target-name="Marcus Vance, MD"
+                                data-target-role="Professional" data-target-id="125">Connect</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="panel">
+                <div class="profile-header glass-effect ">
+                    <div class="profile-avatar"><i class="ph ph-user"></i></div>
+                    <div class="profile-info">
+                        <h2>{{ session.get('name', 'Dr. Guide') }}</h2>
+                        <p class="role-badge"
+                            style="display: inline-block; margin-bottom: 0.5rem; font-size: 0.85rem; background: rgba(14, 165, 233, 0.2); color: var(--clr-secondary-400);">
+                            Principal Researcher</p>
+                        <p style="color: var(--text-secondary); max-width: 600px;">Specializing in comparative genomics
+                            and ecological systems. Translating complex data into student-friendly insights.</p>
+                    </div>
+                    <button class="btn btn-outline" style="align-self: flex-start; margin-left: auto;"
+                        onclick="alert('Opening profile editor...')"><i class="ph ph-pencil-simple"></i> Edit
+                        Profile</button>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-card glass-effect ">
+                        <h3>84</h3>
+                        <p>Questions Answered</p>
+                    </div>
+                    <div class="stat-card glass-effect ">
+                        <h3>1.2k</h3>
+                        <p>Network Reach</p>
+                    </div>
+                    <div class="stat-card glass-effect ">
+                        <h3>12</h3>
+                        <p>Quizzes Published</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                    <div class="glass-effect"
+                        style="padding: 1.5rem; border-radius: var(--radius-md); text-align: center; color: var(--text-secondary);">
+                        Your public contribution timeline will appear here.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research News Section -->
+            <div id="news-section" class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2>Global Research News</h2>
+                        <p>Latest discoveries and scientific innovations from around the world.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="loadNews()"><i class="ph ph-arrows-clockwise"></i>
+                        Refresh</button>
+                </div>
+
+                <div id="newsLoader" style="text-align: center; padding: 3rem; color: var(--clr-primary-400);">
+                    <i class="ph ph-spinner-gap ph-spin" style="font-size: 2.5rem;"></i>
+                    <p class="mt-2">Fetching global research news...</p>
+                </div>
+
+                <div id="newsGrid" class="news-grid" style="display: none;">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Connect Modal -->
+    <div class="modal-overlay" id="connectModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModalBtn"><i class="ph ph-x"></i></button>
+            <h2 style="margin-bottom: 0.5rem; font-family: var(--ff-display);">Send Connection Request</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="connectModalSubtitle">Introduce yourself
+                to start collaborating.</p>
+
+            <form id="connectForm">
+                <input type="hidden" id="targetUserId">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" class="styled-input" id="connectName" value="{{ session.get('name', '') }}"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Your Role</label>
+                    <select class="styled-input" id="connectRole" required>
+                        <option value="Student">Student Explorer</option>
+                        <option value="Researcher" selected>Academic Researcher</option>
+                        <option value="Professional">Industry Professional</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Attach Proof / Resume (PDF)</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-upload-display">
+                            <i class="ph ph-file-pdf"></i>
+                            <div>
+                                <div style="font-weight: 500;" id="fileNameDisplay">Select a file (PDF)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Max size 5MB</div>
+                            </div>
+                        </div>
+                        <input type="file" id="connectResume" accept=".pdf" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;" id="sendConnectBtn">
+                    Send Invitation <i class="ph ph-paper-plane-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        const navItems = document.querySelectorAll('.nav-links li');
+        const panels = document.querySelectorAll('.panel');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                const targetId = item.getAttribute('data-target');
+                panels.forEach(panel => {
+                    panel.classList.remove('active');
+                    if (panel.id === targetId) panel.classList.add('active');
+                });
+            });
+        });
+
+        // Connect Modal Logic
+        const connectModal = document.getElementById('connectModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const connectForm = document.getElementById('connectForm');
+        const connectResume = document.getElementById('connectResume');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const connectModalSubtitle = document.getElementById('connectModalSubtitle');
+        const targetUserIdInput = document.getElementById('targetUserId');
+        let currentConnectBtn = null;
+
+        document.querySelectorAll('.connect-trigger').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const name = this.getAttribute('data-target-name');
+                const role = this.getAttribute('data-target-role');
+                const id = this.getAttribute('data-target-id');
+
+                targetUserIdInput.value = id;
+                connectModalSubtitle.innerText = `Connect with ${name} (${role})`;
+                currentConnectBtn = this;
+
+                connectModal.classList.add('active');
+            });
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            connectModal.classList.remove('active');
+        });
+
+        connectModal.addEventListener('click', (e) => {
+            if (e.target === connectModal) {
+                connectModal.classList.remove('active');
+            }
+        });
+
+        connectResume.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.innerText = this.files[0].name;
+                fileNameDisplay.style.color = 'var(--text-primary)';
+            } else {
+                fileNameDisplay.innerText = 'Select a file (PDF)';
+                fileNameDisplay.style.color = 'inherit';
+            }
+        });
+
+        connectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('sendConnectBtn');
+            const ogText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('connectName').value);
+            formData.append('role', document.getElementById('connectRole').value);
+            formData.append('targetUserId', document.getElementById('targetUserId').value);
+            if (connectResume.files[0]) {
+                formData.append('resume', connectResume.files[0]);
+            }
+
+            try {
+                const response = await fetch('/api/connect', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    setTimeout(() => {
+                        btn.innerHTML = ogText;
+                        btn.disabled = false;
+                        connectModal.classList.remove('active');
+
+                        if (currentConnectBtn) {
+                            currentConnectBtn.innerText = 'Request Sent';
+                            currentConnectBtn.className = 'btn btn-sm';
+                            currentConnectBtn.style.background = 'transparent';
+                            currentConnectBtn.style.border = '1px solid var(--clr-primary-400)';
+                            currentConnectBtn.style.color = 'var(--text-primary)';
+                            currentConnectBtn.classList.remove('connect-trigger');
+                        }
+
+                        // Reset form
+                        connectForm.reset();
+                        fileNameDisplay.innerText = 'Select a file (PDF)';
+                    }, 800);
+                } else {
+                    btn.innerHTML = ogText;
+                    btn.disabled = false;
+                    alert('Error sending connection request.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                btn.innerHTML = ogText;
+                btn.disabled = false;
+            }
+        });
+
+        // Load News Logic
+        let newsLoaded = false;
+        async function loadNews() {
+            const loader = document.getElementById('newsLoader');
+            const grid = document.getElementById('newsGrid');
+
+            loader.style.display = 'block';
+            grid.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/news');
+                const data = await response.json();
+
+                grid.innerHTML = '';
+
+                if (data.articles && data.articles.length > 0) {
+                    data.articles.forEach(article => {
+                        const dateObj = new Date(article.publishedAt);
+                        const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+
+                        let pdfBadge = '';
+                        if (article.has_pdf) {
+                            pdfBadge = `<a href="${article.pdf_url}" target="_blank" class="btn btn-outline btn-sm" style="margin-top: auto; align-self: flex-start; border-color: #ef4444; color: #ef4444;">
+                                            <i class="ph ph-file-pdf"></i> View Proof
+                                        </a>`;
+                        } else {
+                            pdfBadge = `<a href="${article.url}" target="_blank" class="btn btn-outline btn-sm" style="margin-top: auto; align-self: flex-start;">
+                                            <i class="ph ph-arrow-up-right"></i> Read More
+                                        </a>`;
+                        }
+
+                        const imgUrl = article.image || 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=600&q=80';
+
+                        const cardHtml = `
+                            <div class="news-card">
+                                <img src="${imgUrl}" alt="News Image" class="news-img" onerror="this.src='https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=600&q=80'">
+                                <div class="news-content">
+                                    <div class="news-source">${article.source || 'Global Source'} • ${formattedDate}</div>
+                                    <h3 class="news-title">${article.title}</h3>
+                                    <p class="news-desc">${article.description || 'No description available for this article.'}</p>
+                                    ${pdfBadge}
+                                </div>
+                            </div>
+                        `;
+                        grid.innerHTML += cardHtml;
+                    });
+                } else {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;">No news articles available at the moment.</div>';
+                }
+
+                loader.style.display = 'none';
+                grid.style.display = 'grid';
+                newsLoaded = true;
+            } catch (error) {
+                console.error('Failed to load news:', error);
+                loader.style.display = 'none';
+                grid.style.display = 'block';
+                grid.innerHTML = '<div class="glass-effect" style="padding: 2rem; text-align: center; color: #ef4444;">Failed to fetch latest research news. Please try refreshing.</div>';
+            }
+        }
+
+        // Lazy load news
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetId = item.getAttribute('data-target');
+                if (targetId === 'news-section' && !newsLoaded) {
+                    loadNews();
+                }
+            });
+        });
+
+        // Theme Toggle
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const darkIcon = document.getElementById('darkIcon');
+        const lightIcon = document.getElementById('lightIcon');
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+
+            if (newTheme === 'dark') {
+                darkIcon.style.display = 'block'; lightIcon.style.display = 'none';
+            } else {
+                darkIcon.style.display = 'none'; lightIcon.style.display = 'block';
+            }
+        });
+        // Curiosity Mode Logic
+        const submitCuriosityBtn = document.getElementById('submitCuriosityBtn');
+        const curiosityInput = document.getElementById('curiosityInput');
+        const curiosityLoader = document.getElementById('curiosityLoader');
+        const curiosityResult = document.getElementById('curiosityResult');
+
+        if (submitCuriosityBtn) {
+            submitCuriosityBtn.addEventListener('click', async () => {
+                const question = curiosityInput.value.trim();
+                if (!question) {
+                    alert('Please enter a curiosity question.');
+                    return;
+                }
+
+                curiosityLoader.style.display = 'block';
+                curiosityResult.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/curiosity', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        document.getElementById('curiosityExplanation').innerText = data.biological_explanation || 'No explanation provided.';
+
+                        const topicsHtml = (data.related_topics || []).map(t => `<li>${t}</li>`).join('');
+                        document.getElementById('curiosityTopics').innerHTML = topicsHtml;
+
+                        const questionsHtml = (data.research_questions || []).map(q => `<li>${q}</li>`).join('');
+                        document.getElementById('curiosityQuestions').innerHTML = questionsHtml;
+
+                        const experimentsHtml = (data.suggested_experiments || []).map(e => `<li>${e}</li>`).join('');
+                        document.getElementById('curiosityExperiments').innerHTML = experimentsHtml;
+
+                        curiosityLoader.style.display = 'none';
+                        curiosityResult.style.display = 'block';
+                    } else {
+                        const err = await response.json();
+                        alert('Error: ' + err.error);
+                        curiosityLoader.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error submitting curiosity:', error);
+                    curiosityLoader.style.display = 'none';
+                    alert('Failed to connect to curiosity engine.');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

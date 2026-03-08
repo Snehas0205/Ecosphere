@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSphere | Curiosity-Driven Research</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <nav class="navbar glass-effect">
+        <div class="nav-brand">
+            <i class="ph ph-planet"></i>
+            <span>EcoSphere</span>
+        </div>
+        <div class="nav-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#features">Features</a>
+        </div>
+        <div class="nav-controls">
+            <button class="icon-button theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="ph ph-sun" id="lightIcon" style="display:none;"></i>
+                <i class="ph ph-moon" id="darkIcon"></i>
+            </button>
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" class="btn btn-outline">Log In</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="hero-section">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="badge">
+                    <span class="badge-dot"></span>
+                    <span>The Research Ecosystem</span>
+                </div>
+                <!-- Changed text to match the redesign requirements -->
+                <h1 class="hero-title">
+                    From <span class="gradient-text">Questions</span> to Discoveries
+                </h1>
+                <p class="hero-subtitle">
+                    A collaborative research platform connecting students, researchers, and professionals. EcoSphere
+                    transforms passive learning into a collaborative research experience where curiosity drives
+                    discovery.
+                </p>
+
+                <div class="cta-group">
+                    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large">
+                        Start Exploring
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline btn-large"
+                        style="margin-left: 0.5rem; border-radius: 9999px;">
+                        Log In
+                    </a>
+                </div>
+            </div>
+
+            <!-- New Orbit Graphic -->
+            <div class="hero-visual">
+                <div class="center-stat">
+                    <h2>LIVING</h2>
+                    <p>Knowledge</p>
+                </div>
+
+                <div class="orbit-system">
+                    <!-- Inner Ring -->
+                    <div class="orbit-ring ring-1">
+                        <div class="orbit-node node-researcher" title="Genetics"><i class="ph ph-dna"></i></div>
+                        <div class="orbit-node node-ai" title="AI"><i class="ph ph-brain"></i></div>
+                    </div>
+                    <!-- Middle Ring -->
+                    <div class="orbit-ring ring-2">
+                        <div class="orbit-node node-student" title="Climate Science"><i class="ph ph-cloud-sun"></i>
+                        </div>
+                        <div class="orbit-node node-pro" title="Biotech"><i class="ph ph-drop"></i></div>
+                    </div>
+                    <!-- Outer Ring -->
+                    <div class="orbit-ring ring-3">
+                        <div class="orbit-node node-ai" title="Neuroscience"><i class="ph ph-atom"></i></div>
+                        <div class="orbit-node node-researcher" title="Network Topology"><i class="ph ph-graph"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Section 3: How it Works -->
+    <section class="how-it-works-section" id="how-it-works">
+        <div class="section-container">
+            <h2 class="section-title">How EcoSphere Works</h2>
+            <div class="features-grid">
+                <!-- Card 1 -->
+                <div class="feature-card glass-effect">
+                    <div class="icon-wrapper node-student">
+                        <i class="ph ph-graduation-cap"></i>
+                    </div>
+                    <h3>🎓 Students Ask Questions</h3>
+                    <p>Explore scientific ideas and ask researchers directly.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="feature-card glass-effect">
+                    <div class="icon-wrapper node-researcher">
+                        <i class="ph ph-flask"></i>
+                    </div>
+                    <h3>🧪 Researchers Guide Learning</h3>
+                    <p>Researchers explain concepts, provide insights, and validate knowledge.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="feature-card glass-effect">
+                    <div class="icon-wrapper node-pro">
+                        <i class="ph ph-briefcase"></i>
+                    </div>
+                    <h3>🏥 Professionals Add Real Insights</h3>
+                    <p>Industry professionals share real-world applications and experiences.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Features -->
+    <section class="features-section" id="features">
+        <div class="section-container">
+            <h2 class="section-title">Powerful Learning Features</h2>
+            <div class="features-grid">
+                <!-- Block 1 -->
+                <div class="feature-block">
+                    <div class="block-icon node-ai"><i class="ph ph-sparkle"></i></div>
+                    <div class="block-content">
+                        <h3>1️⃣ AI Research Summaries</h3>
+                        <p>Automatically summarize discussions and research insights.</p>
+                    </div>
+                </div>
+                <!-- Block 2 -->
+                <div class="feature-block">
+                    <div class="block-icon node-pro"><i class="ph ph-rss"></i></div>
+                    <div class="block-content">
+                        <h3>2️⃣ Knowledge Feed</h3>
+                        <p>Discover trending research topics and ongoing discussions.</p>
+                    </div>
+                </div>
+                <!-- Block 3 -->
+                <div class="feature-block">
+                    <div class="block-icon node-researcher"><i class="ph ph-users-three"></i></div>
+                    <div class="block-content">
+                        <h3>3️⃣ Research Interaction</h3>
+                        <p>Students, researchers, and professionals collaborate in one ecosystem.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Final CTA -->
+    <section class="final-cta-section">
+        <div class="section-container">
+            <h2 class="section-title">Start Exploring the Research Ecosystem</h2>
+            <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large" style="margin-top: 2rem;">
+                Start Exploring
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // Simple Theme Toggle
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const darkIcon = document.getElementById('darkIcon');
+        const lightIcon = document.getElementById('lightIcon');
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            htmlElement.setAttribute('data-theme', newTheme);
+
+            if (newTheme === 'dark') {
+                darkIcon.style.display = 'block';
+                lightIcon.style.display = 'none';
+            } else {
+                darkIcon.style.display = 'none';
+                lightIcon.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

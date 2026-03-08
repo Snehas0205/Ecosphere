@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | EcoSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="background-effects">
+    </div>
+
+    <div class="auth-container">
+        <a href="{{ url_for('landing') }}" class="back-link">
+            <i class="ph ph-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="auth-card glass-effect">
+            <div class="auth-header">
+                <i class="ph ph-planet logo-icon"></i>
+                <h2>Join EcoSphere</h2>
+                <p>Start your research journey today</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('signup') }}" method="POST" class="auth-form">
+
+                <div class="form-group">
+                    <label>I am joining as a...</label>
+                    <div class="role-selector">
+                        <label class="role-option">
+                            <input type="radio" name="role" value="student" checked>
+                            <div class="role-box">
+                                <i class="ph ph-graduation-cap"></i>
+                                <span>Student</span>
+                            </div>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" name="role" value="researcher">
+                            <div class="role-box">
+                                <i class="ph ph-flask"></i>
+                                <span>Researcher</span>
+                            </div>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" name="role" value="professional">
+                            <div class="role-box">
+                                <i class="ph ph-stethoscope"></i>
+                                <span>Professional</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-user"></i>
+                        <input type="text" id="name" name="name" placeholder="Marie Curie" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-envelope-simple"></i>
+                        <input type="email" id="email" name="email" placeholder="marie@research.org" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-lock-key"></i>
+                        <input type="password" id="password" name="password" placeholder="Create a strong password"
+                            required minlength="8">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    Create Account <i class="ph ph-user-plus"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('login') }}" class="text-gradient">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
